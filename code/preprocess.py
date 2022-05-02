@@ -97,18 +97,19 @@ def get_data(training_file, test_file):
 	"""
 
 	train_inputs = read_data(training_file)
+	train_labels = train_inputs[1:]
+	train_inputs = train_inputs[:-1]
+
+	train_inputs, train_labels = pad_corpus(train_inputs, train_labels)
+
 	test_inputs = read_data(test_file)
+	test_labels = test_inputs[1:]
+	test_inputs = test_inputs[:-1]
+	test_inputs, test_labels = pad_corpus(test_inputs, test_labels)
 
-	train_inputs = pad_corpus(train_english)
-	test_inputs = pad_corpus(test_english)
+	vocab, padding_index = build_vocab(train_inputs)
 
-	vocab, padding_index = build_vocab(train_english)
+	train_inputs = convert_to_id(vocab, train_inputs)
+	test_inputs = convert_to_id(vocab, test_inputs)
 
-	train_inputs = convert_to_id(english_vocab, train_english)
-	test_inputs = convert_to_id(english_vocab, test_english)
-
-	# TODO
-        train_labels = None
-	test_labels = None
-
-	return train_inputs, train_labels, test_inputs, test_labels, vocab, eng_padding_index
+	return train_inputs, train_labels, test_inputs, test_labels, vocab, padding_index
