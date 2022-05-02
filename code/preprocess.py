@@ -10,11 +10,10 @@ PAD_TOKEN = "*PAD*"
 STOP_TOKEN = "*STOP*"
 START_TOKEN = "*START*"
 UNK_TOKEN = "*UNK*"
-FRENCH_WINDOW_SIZE = 14
 ENGLISH_WINDOW_SIZE = 14
 ##########DO NOT CHANGE#####################
 
-def pad_corpus(french, english):
+def pad_corpus(english):
 	"""
 	DO NOT CHANGE:
 	arguments are lists of FRENCH, ENGLISH sentences. Returns [FRENCH-sents, ENGLISH-sents]. The
@@ -24,11 +23,6 @@ def pad_corpus(french, english):
 	:param english: list of English sentences
 	:return: A tuple of: (list of padded sentences for French, list of padded sentences for English)
 	"""
-	FRENCH_padded_sentences = []
-	for line in french:
-		padded_FRENCH = line[:FRENCH_WINDOW_SIZE]
-		padded_FRENCH += [STOP_TOKEN] + [PAD_TOKEN] * (FRENCH_WINDOW_SIZE - len(padded_FRENCH)-1)
-		FRENCH_padded_sentences.append(padded_FRENCH)
 
 	ENGLISH_padded_sentences = []
 	for line in english:
@@ -36,7 +30,7 @@ def pad_corpus(french, english):
 		padded_ENGLISH = [START_TOKEN] + padded_ENGLISH + [STOP_TOKEN] + [PAD_TOKEN] * (ENGLISH_WINDOW_SIZE - len(padded_ENGLISH)-1)
 		ENGLISH_padded_sentences.append(padded_ENGLISH)
 
-	return FRENCH_padded_sentences, ENGLISH_padded_sentences
+	return ENGLISH_padded_sentences
 
 def build_vocab(sentences):
 	"""
@@ -97,17 +91,14 @@ def get_data(french_training_file, english_training_file, french_test_file, engl
 	"""
 
 	#1) Read English and French Data for training and testing (see read_data)
-	train_french, train_english = read_data(french_training_file), read_data(english_training_file)
-	test_french, test_english = read_data(french_test_file), read_data(english_test_file)
+	train_english = read_data(english_training_file)
+	test_english = read_data(english_test_file)
 
 	#2) Pad training data (see pad_corpus)
-	train_french, train_english = pad_corpus(train_french, train_english)
+	train_english = pad_corpus(train_english)
 
 	#3) Pad testing data (see pad_corpus)
-	test_french, test_english = pad_corpus(test_french, test_english)
-
-	#4) Build vocab for French (see build_vocab)
-	french_vocab, fra_padding_index = build_vocab(train_french)
+	test_english = pad_corpus(test_english)
 
 	#5) Build vocab for English (see build_vocab)
 	english_vocab, eng_padding_index = build_vocab(train_english)
@@ -115,9 +106,5 @@ def get_data(french_training_file, english_training_file, french_test_file, engl
 	#6) Convert training and testing English sentences to list of IDS (see convert_to_id)
 	train_english = convert_to_id(english_vocab, train_english)
 	test_english = convert_to_id(english_vocab, test_english)
-
-	#7) Convert training and testing French sentences to list of IDS (see convert_to_id)
-	train_french = convert_to_id(french_vocab, train_french)
-	test_french = convert_to_id(french_vocab, test_french)
 
 	return train_english, test_english, train_french, test_french, english_vocab, french_vocab, eng_padding_index
