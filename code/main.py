@@ -84,7 +84,10 @@ def test(model, test_inputs, test_outputs, padding_index):
 
 
 def main():
-    train_inputs, train_labels, test_inputs, test_labels, vocab, padding_index = get_data("../../data/train.txt", "../../data/test.txt")
+    data_path = "../../data/"
+    train_file = data_path + "els.txt"
+    test_file = data_path + "elt.txt"
+    train_inputs, train_labels, test_inputs, test_labels, vocab, padding_index = get_data(train_file, test_file)
     model = Model(len(vocab_eng))
     train(model, train_inputs, train_labels, padding_index)
     perplexity, accuracy = test(model, test_inputs, test_labels, padding_index)
