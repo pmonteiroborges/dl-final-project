@@ -71,7 +71,7 @@ def read_data(file_name):
 	return text
 
 @av.get_data_func
-def get_data(french_training_file, english_training_file, french_test_file, english_test_file):
+def get_data(english_training_file, english_test_file):
 	"""
 	Use the helper functions in this file to read and parse training and test data, then pad the corpus.
 	Then vectorize your train and test data based on your vocabulary dictionaries.
