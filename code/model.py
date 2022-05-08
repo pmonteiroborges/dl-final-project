@@ -13,6 +13,8 @@ class PoetryModel(tf.keras.Model):
         # hyperparameters
         self.encoder_size = 4
         self.decoder_size = 4
+        self.batch_size = 100
+        self.window_size = 100 #this should probably be something different. 
         self.embedding_size = 100
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
         self.attention_input_size = 100 # should be specific numbers to make dimensions lineup
@@ -48,7 +50,8 @@ class PoetryModel(tf.keras.Model):
         dense_output = self.dense_tanh(concatted)
 
         # get decoder embeddings and pass into decoder
-        decoder_embed = self.decoder_embedding(decoder_input)
+        dec_np = np.array(decoder_input)
+        decoder_embed = self.decoder_embedding(dec_np)
         decoder_output = self.decoder(decoder_embed, initial_state=dense_output)
 
         # send through linear layer and softmax to get probabilities

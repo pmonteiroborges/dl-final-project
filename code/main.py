@@ -1,8 +1,8 @@
 import numpy as np
 import tensorflow as tf
 
-from model import Model
-from preprocess import get_data, pad_corpus, convert_to_id
+from model import PoetryModel
+from preprocess import get_data
 
 
 def train(model, train_inputs, train_outputs, padding_index):
@@ -23,13 +23,13 @@ def train(model, train_inputs, train_outputs, padding_index):
 
         end = i + model.batch_size
         inputs = train_inputs[i:end]
-        outputs = train_outputs[i:end, 0:model.window_size]
-        labels = train_outputs[i:end, 1:model.window_size+1]
+        outputs = train_outputs[i:end, :-1]
+        labels = train_outputs[i:end, 1:]
 
         with tf.GradientTape() as tape:
             logits = model.call(inputs, outputs)
             mask = np.where(padding_index == labels, 0, 1)
-            loss = model.loss_function(logits, labels, mask)
+            loss = model.loss(logits, labels, mask)
 
         if i % 10000 == 0:
             print(f"Loss @ {i}th batch: {loss}")
@@ -60,13 +60,13 @@ def test(model, test_inputs, test_outputs, padding_index):
     for i in range(0, num_batches, model.batch_size):
         end = i + model.batch_size
         inputs = test_inputs[i:end]
-        outputs = test_outputs[i:end, 0:model.window_size]
-        labels = test_outputs[i:end, 1:model.window_size+1]
+        outputs = test_outputs[i:end, :-1]
+        labels = test_outputs[i:end, 1:]
 
-        probabilities = model.call(test_inputs, test_outputs)
+        probabilities = model.call(inputs, outputs)
         mask = np.where(padding_index == labels, 0, 1)
 
-        loss = model.loss_function(probabilities, labels, mask)
+        loss = model.loss(probabilities, labels, mask)
         total_loss += loss
 
         num_words = np.sum(mask)
@@ -77,21 +77,30 @@ def test(model, test_inputs, test_outputs, padding_index):
     perplexity = tf.math.exp(total_loss / total_num_words)
     accuracy = correct_words / total_num_words
 
-    print(f"perplexity: {perplexity}")
-    print(f"accuracy: {accuracy}")
+    print(f"train perplexity: {perplexity}")
+    print(f"train accuracy: {accuracy}")
 
     return perplexity, accuracy
 
 
 def main():
-    data_path = "../../data/"
-    train_file = data_path + "els.txt"
-    test_file = data_path + "elt.txt"
+    data_path = "../data/"
+    train_file = "/Users/palomasalseda/Desktop/env/hw1-mnist-paloomers/dl-final-project/data/els.txt" # data_path + "els.txt" 
+    test_file = "/Users/palomasalseda/Desktop/env/hw1-mnist-paloomers/dl-final-project/data/elt.txt" #data_path + "elt.txt"
+
+    print("read data")
     train_inputs, train_labels, test_inputs, test_labels, vocab, padding_index = get_data(train_file, test_file)
-    model = Model(len(vocab_eng))
+    print("data recieved and processed")
+
+    model = PoetryModel(len(vocab))
+
+    print("start training")
     train(model, train_inputs, train_labels, padding_index)
+    print("model trained")
+
+    print("start testing")
     perplexity, accuracy = test(model, test_inputs, test_labels, padding_index)
-    print("perplexity:", perplexity, "accuracy:", accuracy)
+    print("final perplexity:", perplexity, "final accuracy:", accuracy)
 
 
 if __name__ == '__main__':

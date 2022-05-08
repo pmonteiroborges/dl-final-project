@@ -2,9 +2,6 @@ import numpy as np
 import tensorflow as tf
 import numpy as np
 
-from attenvis import AttentionVis
-av = AttentionVis()
-
 ##########DO NOT CHANGE#####################
 PAD_TOKEN = "*PAD*"
 STOP_TOKEN = "*STOP*"
@@ -76,7 +73,7 @@ def read_data(file_name):
 		for line in data_file: text.append(line.split())
 	return text
 
-@av.get_data_func
+
 def get_data(training_file, test_file):
 	"""
 	Use the helper functions in this file to read and parse training and test data, then pad the corpus.
@@ -110,6 +107,8 @@ def get_data(training_file, test_file):
 	vocab, padding_index = build_vocab(train_inputs)
 
 	train_inputs = convert_to_id(vocab, train_inputs)
+	train_labels = convert_to_id(vocab, train_labels)
+	test_labels = convert_to_id(vocab, test_labels)
 	test_inputs = convert_to_id(vocab, test_inputs)
 
 	return train_inputs, train_labels, test_inputs, test_labels, vocab, padding_index

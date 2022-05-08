@@ -12,9 +12,16 @@ class Attention(tf.keras.layers.Layer):
         # used to compute the score in the attention calculation
         self.W = self.add_weight(shape=(input_size, output_size), trainable=True)
 
+        self.layer = tf.keras.layers.Dense(input_size, activation = None, dtype=tf.float32)
+
     def score(self, decoder_hidden_state, hidden_state):
         # TODO: might need to use tf.matmul or tf.tensordot somewhere instead
-        return tf.transpose(decoder_hidden_state) @ self.W @ hidden_state
+        dense = self.layer(hidden_state)
+        dense = tf.reshape(dense, (dense.shape[0], -1))
+        decoder_state = tf.transpose(decoder_hidden_state) @ dense
+        score = tf.reshape(decoder_state, (-1, hidden_state.shape[1], 1))
+        return tf.squeeze(score)
+
 
     def call(self, curr_decoder_hidden_state, encoder_hidden_states):
         '''
@@ -26,10 +33,10 @@ class Attention(tf.keras.layers.Layer):
         :return context: the context vector 
         '''
         scores = self.score(curr_decoder_hidden_state, encoder_hidden_states)
-        softmaxed = tf.nn.softmax(scores)
-        scaled = softmaxed * encoder_hidden_states
+        softmaxed = tf.nn.softmax(scores, axis = 1)
+        scaled = tf.matmul(softmaxed, encoder_hidden_states)
 
-        context = tf.reduce_sum(scaled)
+        context = tf.reduce_sum(scaled, axis = 1)
 
         return context
 
