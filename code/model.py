@@ -84,9 +84,3 @@ class PoetryModel(tf.keras.Model):
         scce = tf.keras.losses.sparse_categorical_crossentropy(labels, prbs) * mask
 
         return tf.reduce_sum(scce)
-
-
-
-
-
-
