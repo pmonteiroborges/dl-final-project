@@ -44,7 +44,8 @@ def build_vocab(sentences):
   """
 	tokens = []
 	for s in sentences: tokens.extend(s)
-	all_words = sorted(list(set([STOP_TOKEN,PAD_TOKEN,UNK_TOKEN] + tokens)))
+	all_words = sorted(list(set([STOP_TOKEN,PAD_TOKEN,UNK_TOKEN] + tokens))) ##Maybe something about this statement has it acting up
+	
 
 	vocab =  {word:i for i,word in enumerate(all_words)}
 

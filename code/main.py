@@ -71,7 +71,7 @@ def test(model, test_inputs, test_outputs, padding_index):
 
         num_words = np.sum(mask)
         total_num_words += num_words
-        accuracy = model.accuracy_function(probabilities, labels, mask)
+        accuracy = model.accuracy(probabilities, labels, mask)
         correct_words += accuracy * num_words
 
     perplexity = tf.math.exp(total_loss / total_num_words)
@@ -82,6 +82,36 @@ def test(model, test_inputs, test_outputs, padding_index):
 
     return perplexity, accuracy
 
+def generate_sentence(word1, length, vocab, model, sample_n=10):
+    """
+    Takes a model, vocab, selects from the most likely next word from the model's distribution
+
+    :param model: trained RNN model
+    :param vocab: dictionary, word to id mapping
+    :return: None
+    """
+
+    # NOTE: Feel free to play around with different sample_n values
+
+    reverse_vocab = {idx: word for word, idx in vocab.items()}
+    previous_state = None
+
+    first_string = word1
+    first_word_index = vocab[word1]
+    next_input = [[first_word_index]]
+    text = [first_string]
+
+    for i in range(length):
+        logits, previous_state = model.call(next_input, previous_state)
+        logits = np.array(logits[0, 0, :])
+        top_n = np.argsort(logits)[-sample_n:]
+        n_logits = np.exp(logits[top_n]) / np.exp(logits[top_n]).sum()
+        out_index = np.random.choice(top_n, p=n_logits)
+
+        text.append(reverse_vocab[out_index])
+        next_input = [[out_index]]
+
+    print(" ".join(text))
 
 def main():
     data_path = "../data/"
@@ -101,6 +131,18 @@ def main():
     print("start testing")
     perplexity, accuracy = test(model, test_inputs, test_labels, padding_index)
     print("final perplexity:", perplexity, "final accuracy:", accuracy)
+
+    #test 1: 
+    generate_sentence("Trap", 20, vocab, model)
+
+    #test 2:
+    generate_sentence("Sleeping", 15, vocab, model)
+
+    #test 3:
+    generate_sentence("Love", 20, vocab, model)
+
+    #test 3:
+    generate_sentence("The", 1, vocab, model)
 
 
 if __name__ == '__main__':
