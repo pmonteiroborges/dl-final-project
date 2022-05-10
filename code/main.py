@@ -117,8 +117,8 @@ def generate_sentence(word1, length, vocab, model, sample_n=10):
 
 def main():
     data_path = "../data/"
-    train_file = "/Users/palomasalseda/Desktop/env/hw1-mnist-paloomers/dl-final-project/data/els.txt" # data_path + "els.txt" 
-    test_file = "/Users/palomasalseda/Desktop/env/hw1-mnist-paloomers/dl-final-project/data/elt.txt" #data_path + "elt.txt"
+    train_file = data_path + "els.txt" 
+    test_file = data_path + "elt.txt"
 
     print("read data")
     train_inputs, train_labels, test_inputs, test_labels, vocab, padding_index = get_data(train_file, test_file)
