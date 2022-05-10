@@ -90,18 +90,24 @@ def generate_sentence(word1, length, vocab, model, sample_n=10):
     """
 
     reverse_vocab = {idx: word for word, idx in vocab.items()}
-    previous_state = None
+    start_token = vocab["*START*"]
+    decoder_input = [[start_token] * 10]
 
     first_string = word1
     first_word_index = vocab[word1]
     next_input = [[first_word_index]]
     text = [first_string]
 
+    # logits = tf.squeeze(logits)
+
     for i in range(length):
-        logits, previous_state = model.call(next_input, previous_state)
+        logits = model.call(next_input, decoder_input)
         logits = np.array(logits[0, 0, :])
         top_n = np.argsort(logits)[-sample_n:]
-        n_logits = np.exp(logits[top_n]) / np.exp(logits[top_n]).sum()
+        logits_top_n = logits[top_n]
+        n_logits = np.exp(logits_top_n)
+        pt2 = n_logits.sum()
+        n_logits = n_logits / pt2
         out_index = np.random.choice(top_n, p=n_logits)
 
         text.append(reverse_vocab[out_index])
