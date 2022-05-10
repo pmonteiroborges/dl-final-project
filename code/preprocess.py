@@ -13,12 +13,11 @@ WINDOW_SIZE = 14
 def pad_corpus(inputs, labels):
 	"""
 	DO NOT CHANGE:
-	arguments are lists of FRENCH, ENGLISH sentences. Returns [FRENCH-sents, ENGLISH-sents]. The
-	text is given an initial "*STOP*". English is padded with "*START*" at the beginning for Teacher Forcing.
-	:param french: list of French sentences
-	:param french: list of French sentences
-	:param english: list of English sentences
-	:return: A tuple of: (list of padded sentences for French, list of padded sentences for English)
+	arguments are lists of sentences. Returns sentences. The
+	text is given an initial "*STOP*". Sentences is padded with "*START*" at the beginning for Teacher Forcing.
+	:param inputs: list of sentences
+	:param labels: list of label sentences
+	:return: A tuple of: (list of padded input sentences, list of padded label sentences)
 	"""
 
 	INPUT_padded_sentences = []
@@ -45,7 +44,7 @@ def build_vocab(sentences):
 	tokens = []
 	for s in sentences: tokens.extend(s)
 	all_words = sorted(list(set([STOP_TOKEN,PAD_TOKEN,UNK_TOKEN] + tokens))) ##Maybe something about this statement has it acting up
-	
+
 
 	vocab =  {word:i for i,word in enumerate(all_words)}
 
@@ -79,19 +78,14 @@ def get_data(training_file, test_file):
 	"""
 	Use the helper functions in this file to read and parse training and test data, then pad the corpus.
 	Then vectorize your train and test data based on your vocabulary dictionaries.
-	:param french_training_file: Path to the French training file.
-	:param english_training_file: Path to the English training file.
-	:param french_test_file: Path to the French test file.
-	:param english_test_file: Path to the English test file.
+	:param training_file: Path to the training file.
+	:param test_file: Path to the test file.
 
 	:return: Tuple of train containing:
-	(2-d list or array with English training sentences in vectorized/id form [num_sentences x 15] ),
-	(2-d list or array with English test sentences in vectorized/id form [num_sentences x 15]),
-	(2-d list or array with French training sentences in vectorized/id form [num_sentences x 14]),
-	(2-d list or array with French test sentences in vectorized/id form [num_sentences x 14]),
-	English vocab (Dict containg word->index mapping),
-	French vocab (Dict containg word->index mapping),
-	English padding ID (the ID used for *PAD* in the English vocab. This will be used for masking loss)
+	(2-d list or array with training sentences in vectorized/id form [num_sentences x window_size+1] ),
+	(2-d list or array with test sentences in vectorized/id form [num_sentences x window_size]),
+	vocab (Dict containg word->index mapping),
+	padding ID (the ID used for *PAD* in the vocab. This will be used for masking loss)
 	"""
 
 	train_inputs = read_data(training_file)

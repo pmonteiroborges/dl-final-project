@@ -39,7 +39,7 @@ class PoetryModel(tf.keras.Model):
         :return probs: The 3d probabilities as a tensor, [batch_size x window_size x vocab_size]
         """
         # get encoder embeddings and pass into encoder
-        encoder_embed = self.encoder_embedding(encoder_input)
+        encoder_embed = self.encoder_embedding(np.array(encoder_input))
         encoder_output, encoder_state = self.encoder(encoder_embed)
 
         # use encoder states and output to get the context vector

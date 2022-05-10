@@ -10,8 +10,8 @@ def train(model, train_inputs, train_outputs, padding_index):
     Runs through one epoch - all training examples.
 
     :param model: the initialized model to use for forward and backward pass
-    :param train_inputs: french train data (all data for training) of shape (num_sentences, wimdow_size)
-    :param train_outputs: english train data (all data for training) of shape (num_sentences, window_size)
+    :param train_inputs: train data (all data for training) of shape (num_sentences, wimdow_size)
+    :param train_outputs: train data (all data for training) of shape (num_sentences, window_size+1)
     :param padding_index: the padding index, the id of *PAD* token. This integer is used when masking padding labels.
     :return: None
     """
@@ -43,13 +43,11 @@ def test(model, test_inputs, test_outputs, padding_index):
     Runs through one epoch - all testing examples.
 
     :param model: the initialized model to use for forward and backward pass
-    :param test_inputs: french test data (all data for testing) of shape (num_sentences, 14)
-    :param test_outputs: english test data (all data for testing) of shape (num_sentences, 15)
+    :param test_inputs: test data (all data for testing) of shape (num_sentences, window_size)
+    :param test_outputs: test data (all data for testing) of shape (num_sentences, window_size+1)
     :returns: a tuple containing at index 0 the perplexity of the test set and at index 1 the per symbol accuracy on test set, 
     e.g. (my_perplexity, my_accuracy)
     """
-
-    # Note: Follow the same procedure as in train() to construct batches of data!
     num_examples = test_inputs.shape[0]
     num_batches = num_examples - (num_examples % model.batch_size)
 
@@ -91,8 +89,6 @@ def generate_sentence(word1, length, vocab, model, sample_n=10):
     :return: None
     """
 
-    # NOTE: Feel free to play around with different sample_n values
-
     reverse_vocab = {idx: word for word, idx in vocab.items()}
     previous_state = None
 
@@ -133,16 +129,16 @@ def main():
     print("final perplexity:", perplexity, "final accuracy:", accuracy)
 
     #test 1: 
-    generate_sentence("Trap", 20, vocab, model)
+    generate_sentence("we", 20, vocab, model)
 
     #test 2:
-    generate_sentence("Sleeping", 15, vocab, model)
+    generate_sentence("i", 15, vocab, model)
 
     #test 3:
-    generate_sentence("Love", 20, vocab, model)
+    generate_sentence("this", 20, vocab, model)
 
     #test 3:
-    generate_sentence("The", 1, vocab, model)
+    generate_sentence("the", 1, vocab, model)
 
 
 if __name__ == '__main__':
