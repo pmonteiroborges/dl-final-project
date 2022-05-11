@@ -11,14 +11,14 @@ class PoetryModel(tf.keras.Model):
         self.vocab_size = vocab_size
 
         # hyperparameters
-        self.encoder_size = 4
-        self.decoder_size = 4
+        self.encoder_size = 32
+        self.decoder_size = 32
         self.batch_size = 100
-        self.window_size = 100 #this should probably be something different. 
-        self.embedding_size = 100
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
-        self.attention_input_size = 100 # should be specific numbers to make dimensions lineup
-        self.attention_output_size = 100 # same as above
+        self.window_size = 16 #this should probably be something different. 
+        self.embedding_size = 1024
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.005)
+        self.attention_input_size = 64 # should be specific numbers to make dimensions lineup
+        self.attention_output_size = 64 # same as above
 
         # embeddings, encoder, decoder, attention, dense layer
         self.encoder_embedding = tf.keras.layers.Embedding(self.vocab_size, self.embedding_size)
