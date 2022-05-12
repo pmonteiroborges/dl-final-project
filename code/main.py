@@ -89,9 +89,6 @@ def generate_sentence(word1, length, vocab, model, sample_n=10):
     :return: None
     """
 
-    common_words = ['the', 'a', '.', '(', ')', ',', '*STOP*']
-    for word in common_words: del vocab[word]
-
     reverse_vocab = {idx: word for word, idx in vocab.items()}
     start_token = vocab["*START*"]
     decoder_input = [[start_token] * 10]
@@ -103,6 +100,7 @@ def generate_sentence(word1, length, vocab, model, sample_n=10):
 
     for i in range(length):
         logits = model.call(next_input, decoder_input)
+        logits = np.array(logits[0, 0, :])
         top_n = np.argsort(logits)[-sample_n:]
         logits_top_n = logits[top_n]
         n_logits = np.exp(logits_top_n)
@@ -117,8 +115,8 @@ def generate_sentence(word1, length, vocab, model, sample_n=10):
 
 def main():
     data_path = "../data/"
-    train_file = "/Users/palomasalseda/Desktop/env/hw1-mnist-paloomers/dl-final-project/data/els.txt" # data_path + "els.txt" 
-    test_file = "/Users/palomasalseda/Desktop/env/hw1-mnist-paloomers/dl-final-project/data/elt.txt" #data_path + "elt.txt"
+    train_file = data_path + "els.txt" 
+    test_file = data_path + "elt.txt"
 
     print("read data")
     train_inputs, train_labels, test_inputs, test_labels, vocab, padding_index = get_data(train_file, test_file)
